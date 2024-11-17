@@ -1,0 +1,45 @@
+import ipaddress
+
+def calculate_network_details(ip, cidr):
+    """
+    Calculate detailed network information for a given IP and CIDR.
+
+    Args:
+    ip (str): The base IP address.
+    cidr (int): CIDR prefix.
+
+    Returns:
+    dict: A dictionary containing network details.
+    """
+    try:
+        # Construct network object
+        network = ipaddress.ip_network(f"{ip}/{cidr}", strict=False)
+
+        # Network details
+        network_details = {
+            "IP Address": ip,
+            "Subnet Mask": str(network.netmask),
+            "Network Address": str(network.network_address),
+            "Broadcast Address": str(network.broadcast_address),
+            "First Usable IP": str(list(network.hosts())[0]),
+            "Last Usable IP": str(list(network.hosts())[-1]),
+            "Total Usable Hosts": network.num_addresses - 2  # Exclude network and broadcast
+        }
+
+        return network_details
+
+    except ValueError as e:
+        return f"Error: {e}"
+
+if __name__ == "__main__":
+    ip = input("Enter IP Address (e.g., 192.168.1.1): ")
+    cidr = int(input("Enter CIDR value (e.g., 24): "))
+
+    details = calculate_network_details(ip, cidr)
+    
+    if isinstance(details, dict):
+        print("\nNetwork Details:")
+        for key, value in details.items():
+            print(f"{key}: {value}")
+    else:
+        print(details)
